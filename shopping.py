@@ -8,9 +8,14 @@ class Data(object):
         self.price = 0
         self.member_price =[]#each family member price
         self.item_used =[] #0/1 knapsack
+        self.format = ""
+
+    def run(self):
+        self.family_price()
+        #self.list_values()
+        self.formatting()
 
     def list_values(self):
-        self.family_price()
         print("N=%s" % self.N)
         print("val=%s" % self.val)
         print("wt=%s" % self.wt)
@@ -18,6 +23,7 @@ class Data(object):
         print("max_wt=%s" % self.max_wt)
         print("member_price= %s"% self.member_price)
         print("item_used=%s"%self.item_used)
+        print("total price=%s"%self.price)
         print("")
 
     def family_price(self):
@@ -26,8 +32,24 @@ class Data(object):
             price,items = self.shopping_max(W,self.N)
             self.member_price.append(price)
             self.item_used.append(items)
+            self.price += price
 
-
+    def formatting(self):
+        #print test cases outside of function
+        format ="Total Price %s\nMember Items: \n" % (self.price)
+        #print("Total Price %s\nMember Items: \n" % (self.price))
+        #take out all 0s
+        for member in range(self.family_members):
+            string_items = ""
+            for number in self.item_used[member]:
+                #adds item to string
+                if number !=0:
+                    string_items += str(number) + " "
+            format += "%s: %s \n"%(member+1,string_items)
+            #print("%s: %s "%(member+1,string_items))
+        format +="\n"
+        self.format = format
+        print(self.format)
 
     def shopping_max(self,W,N):
         V = [[-1 for w in range(W+1)] for i in range(N+1)]
@@ -60,9 +82,10 @@ class Data(object):
             #print(i)
             if temp not in V[i-1]:
                 #print("temp = %s"%temp)
-                item_used[i-1] = 1
+                item_used[i-1] = i
                 temp -= self.val[i-1]
             else:
+                #continue
                 item_used[i-1] = 0
 
         #print(max_price)
@@ -112,9 +135,13 @@ def create_class():
 
 def main():
     create_class()
+    results = open("results.txt", "w")
+    results.truncate(0)
     for i in range(len(test)):
-        test[i].list_values()
+        test[i].run()
+        results.write(test[i].format)
 
+    results.close()
 
 
 
